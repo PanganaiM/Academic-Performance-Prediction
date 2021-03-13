@@ -1,0 +1,36 @@
+#Neural newtork model
+library(neuralnet)
+set.seed(333)
+#passorfail~ind.ass+acadperf+grp.ass+bursary+engp+stdpvty+classA+stdwrkld+studyhrs+ftpt
+n <- neuralnet(passorfail~ind.ass+acadperf+bursary+engp+stdpvty+classA+stdwrkld+studyhrs+ftpt,
+               data = training,
+               hidden = 1,
+               err.fct = "ce",
+               linear.output = FALSE,
+               lifesign = 'full')
+plot(n)
+
+#Prediction
+output <- compute(n, training[,-12])
+head(output$net.result)
+head(training[4,]) #we r looking at the 1st row and all columns
+
+#Confusion Matrix and Misclassification Error using training data
+output <- compute(n, training[,-12])
+p1 <- output$net.result
+pred1 <- ifelse(p1>0.5,1,0)
+tab1 <- table(pred1, training$passorfail)
+tab1
+1-sum(diag(tab1))/sum(tab1)   #This calculates the Misclassification Error
+
+
+#Repeat same thing with testing data for misclassification and then compare results
+output <- compute(n, testing[,-12])
+p2 <- output$net.result
+pred2 <- ifelse(p2>0.5,1,0)
+tab2 <- table(pred2, testing$passorfail)
+tab2
+1-sum(diag(tab2))/sum(tab2)   #This calculates the Misclassification Error
+
+
+                    
